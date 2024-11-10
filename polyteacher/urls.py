@@ -15,10 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from translator.views import TranslationViewSet
+from django.urls import path
+from translator.views import FrenchSpanishTranslationViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TranslationViewSet.as_view({'get': 'list'})),
+    path('api/french_spanish_translator', FrenchSpanishTranslationViewSet.as_view(), name='translator'),
 ]
