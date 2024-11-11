@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from translator.models import Translation
 
-class TranslationSerializer(serializers.Serializer):
+class TranslationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Translation
         fields = [
