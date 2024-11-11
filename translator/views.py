@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from translator.models import Translation
 from translator.serializers import TranslationSerializer
 
@@ -33,3 +34,6 @@ class FrenchEnglishTranslationViewSet(APIView):
     
     def delete(self, request, pk):
         return Response(data={}, status=None)
+
+def index(request):
+    return render(request, 'index.html', context={})
