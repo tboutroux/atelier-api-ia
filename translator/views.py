@@ -10,22 +10,7 @@ from translator.serializers import TranslationSerializer
 class FrenchSpanishTranslationViewSet(APIView):
 
     def get(self, request):
-        
-        import google.generativeai as genai
-        import os
-        
-        prompt = request.GET.get('q', "Bonjour")
-
-        prompt = f"""
-        Traduis "{prompt}" en espagnol. La réponse ne doit contenir que la traduction
-        """
-
-        genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
-
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
-        
-        return Response(data={'result': response.text}, status=None)
+        return Response(data={'result': "OK"}, status=None)
     
     def post(self, request):
         return Response(data={}, status=None)
