@@ -1,5 +1,83 @@
-<a href="/api/french_spanish_translator">Traducteur Français vers Espagnol</a>
-</br>
-<a href="/api/french_english_translator">Traducteur Français vers Anglais</a>
-</br>
-<a href="/admin">Section administrateur</a>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier API IA</title>
+    <!-- Importation de la police Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Réinitialisation des styles par défaut */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Style global */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #d3d3d3;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Conteneur principal */
+        .container {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        /* Style des titres */
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        /* Style des liens */
+        a {
+            display: block;
+            margin: 12px 0;
+            padding: 12px 15px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        /* Hover effect sur les liens */
+        a:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* Active effect */
+        a:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenue à l'Atelier API IA</h1>
+        <a href="/api/french_spanish_translator">Traducteur Français vers Espagnol</a>
+        <a href="/api/french_english_translator">Traducteur Français vers Anglais</a>
+        <a href="/api/all_translation">Toutes les traductions</a>
+        <a href="/admin">Section administrateur</a>
+    </div>
+</body>
+</html>
