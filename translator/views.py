@@ -13,27 +13,39 @@ def translator(prompt: str, language: str) -> str:
     api_key = os.environ.get('GOOGLE_API_KEY') # To complete
     genai.configure(api_key=api_key)
 
+    if not api_key:
+        raise EnvironmentError("Google API Key not found in environment variables")
+
     match language.lower():
 
-        case "ES":
+        case "es":
             lang_prompt = "en espagnol"
 
-        case "EN":
+        case "en":
             lang_prompt = "en anglais"
 
-        case "IT":
+        case "it":
             lang_prompt = "en italien"
 
+        case "fr":
+            lang_prompt = "en français"
+
         case _:
-            raise ValueError("Language not supported")
+            raise ValueError(f"Language {language} not supported")
 
     prompt = f"""
         Traduis "{prompt}" {lang_prompt} et renvoie uniquement la traduction.
     """
 
     model = genai.GenerativeModel("gemini-1.5-flash")
-    response = model.generate_content(prompt)
+
+    try:
+        response = model.generate_content(prompt)
+    except Exception as e:
+        raise RuntimeError(f"An error occurred: {e}")
+    
     return response.text
+
         
 class AllTranslation(APIView):
     
@@ -53,7 +65,7 @@ class AllTranslation(APIView):
             "translations": serialized_data.data
         }, status=status.HTTP_200_OK)
     
-    @swagger_auto_schema(request_body=TranslationSerializer)
+    @swagger_auto_schema(request_body=TranslationSerializer, responses={200: TranslationSerializer, 400: "Missing parameters", 500: "An error occurred during translation"})
     def post(self, request):
         """
         Create a new translation
@@ -72,21 +84,49 @@ class AllTranslation(APIView):
         source_language = request.GET.get('source_language', None)
         target_language = request.GET.get('target_language', None)
         source_text = request.GET.get('source_text', None)
-        target_text = translator(source_text, target_language)
+        
+        print(f"source_language: {source_language}")
+        print(f"target_language: {target_language}")
+        print(f"source_text: {source_text}")
 
-        if not any([source_language, target_language, source_text]):
-            return Response(data={"Response": "Missing parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        if not all([source_language, target_language, source_text]):
+            return Response(
+                data={"Response": "Missing parameters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if target_language not in ["ES", "EN", "IT", "FR"]:
+            return Response(
+                data={"Response": "Invalid target language. Supported: ES, EN, IT, FR"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        # Vérifier si la traduction existe déjà
+
+        try:
+            target_text = translator(source_text, target_language)
+
+            if "\n" in target_text:
+                target_text = target_text.split("\n")[0]
+
+        except ValueError as ve:
+            return Response(
+                data={"Response": str(ve)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                data={"Response": f"An error occurred during translation: {e}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
         object_exist = Translation.objects.filter(
             source_language=source_language,
             target_language=target_language,
             source_text=source_text
-        ).exists()  # Renvoie un booléen directement
+        ).exists()
 
-        # Structure de réponse de base
         response = {
-            "Response": "",
+            "Response": "Translation created" if not object_exist else "Translation already exists",
             "translation": {
                 "source_language": source_language,
                 "target_language": target_language,
@@ -95,19 +135,16 @@ class AllTranslation(APIView):
             }
         }
 
-        if object_exist:
-            response["Response"] = "Translation already exists"
-            return Response(data=response, status=status.HTTP_200_OK)
-        else:
-            # Créer la nouvelle traduction
+        if not object_exist:
             Translation.objects.create(
                 source_language=source_language,
                 target_language=target_language,
                 source_text=source_text,
                 target_text=target_text
             )
-            response["Response"] = "Translation created"
             return Response(data=response, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data=response, status=status.HTTP_200_OK)
 
 def index(request):
     return render(request, 'index.html', context={})
